@@ -275,10 +275,12 @@ export const getTopMoviesWorldwide = async (page = 1) => {
         `${BASE_URL}/api/movies/proxy/tmdb/trending/movie/week`,
         { params: { page }, headers: getAuthHeaders() }
       );
+      const currentPage = Number(response.data?.page || page);
+      const totalPages = Number(response.data?.total_pages || 1);
       const results = (response.data.results || []).filter(
         (movie) => Number(movie.vote_average || movie.rating || 0) >= 2
       );
-      const hasMore = results.length === 20;
+      const hasMore = currentPage < totalPages;
       return { results, hasMore };
     },
     CACHE_TTL.short
@@ -300,10 +302,12 @@ export const getTopMoviesIndia = async (page = 1) => {
           headers: getAuthHeaders(),
         }
       );
+      const currentPage = Number(response.data?.page || page);
+      const totalPages = Number(response.data?.total_pages || 1);
       const results = (response.data.results || []).filter(
         (movie) => Number(movie.vote_average || movie.rating || 0) >= 2
       );
-      const hasMore = results.length === 20;
+      const hasMore = currentPage < totalPages;
       return { results, hasMore };
     },
     CACHE_TTL.short
