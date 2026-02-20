@@ -820,7 +820,8 @@ export const getRatings = async (movieId) => {
       CACHE_TTL.short,
     );
   } catch (error) {
-    throw error.response?.data?.error || "Failed to fetch ratings";
+    handleProtectedApiError(error);
+    return [];
   }
 };
 

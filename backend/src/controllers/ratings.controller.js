@@ -90,13 +90,17 @@ export const deleteRating = async (req, res) => {
 
 export const getRatings = async (req, res) => {
   const { movie_id } = req.params;
+  const normalizedMovieId = normalizeMovieId(movie_id);
   try {
-    const ratings = await Rating.find({ movie_id }).sort({ watched_date: -1 });
-    if (ratings.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No ratings found for this movie" });
+    if (!normalizedMovieId) {
+      return res.status(400).json({ message: "movie_id is required" });
     }
+
+    const ratings = await Rating.find({ movie_id: normalizedMovieId }).sort({
+      watched_date: -1,
+    });
+
+    // Return an empty list instead of 404 so clients can render gracefully.
     res.status(200).json(ratings);
   } catch (error) {
     res

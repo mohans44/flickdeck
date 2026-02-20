@@ -68,8 +68,12 @@ export function useMovieData(id, user) {
     setExistingRating(null);
     if (id) {
       setLoadingReviews(true);
-      Promise.all([getRatings(id), getMovieTmdbReviews(id)])
-        .then(([ratingsData, tmdbData]) => {
+      Promise.allSettled([getRatings(id), getMovieTmdbReviews(id)])
+        .then(([ratingsResult, tmdbResult]) => {
+          const ratingsData =
+            ratingsResult.status === "fulfilled" ? ratingsResult.value : [];
+          const tmdbData = tmdbResult.status === "fulfilled" ? tmdbResult.value : [];
+
           const normalizedRatings = Array.isArray(ratingsData) ? ratingsData : [];
           const normalizedTmdb = Array.isArray(tmdbData)
             ? tmdbData.map((review) => ({
